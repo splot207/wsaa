@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JIJA$ · Panel de Grupos</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <img src="assets/logo.png" alt="JIJA$" class="login-logo">
+    <h1 class="login-title">LAS JIJA<span class="gold">$</span></h1>
+    <p class="login-sub">Ingresa para acceder al panel</p>
+
+    <form id="login-form" class="login-form" autocomplete="off">
+      <div class="field">
+        <label for="login-user">Usuario</label>
+        <input type="text" id="login-user" autocomplete="username" placeholder="Usuario">
+      </div>
+      <div class="field">
+        <label for="login-pass">Contraseña</label>
+        <input type="password" id="login-pass" autocomplete="current-password" placeholder="Contraseña">
+      </div>
+      <p class="login-error" id="login-error" hidden>Usuario o contraseña incorrectos.</p>
+      <button type="submit" class="btn btn-primary login-submit">Ingresar</button>
+    </form>
+  </div>
+</div>
+
+<!-- ============ TOP BAR ============ -->
+<div id="app-root" hidden>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="assets/logo.png" alt="JIJA$" class="brand-mark">
+    <div class="brand-text">
+      <span class="brand-title">LAS JIJA<span class="gold">$</span></span>
+    </div>
+  </div>
+  <nav class="topnav">
+    <button class="nav-btn is-active" data-view="dashboard">Grupos</button>
+  </nav>
+  <button class="btn btn-primary" id="btn-new-group">+ Nuevo grupo</button>
+  <button class="icon-btn" id="btn-logout" title="Cerrar sesión">⏻</button>
+</header>
+
+<main class="app">
+
+  <!-- ============ DASHBOARD VIEW ============ -->
+  <section id="view-dashboard" class="view">
+
+    <div class="dash-stats">
+      <div class="dstat">
+        <span class="dstat-label">Grupos activos</span>
+        <span class="dstat-value mono" id="stat-total-groups">0</span>
+      </div>
+      <div class="dstat">
+        <span class="dstat-label">Usuarios únicos</span>
+        <span class="dstat-value mono" id="stat-total-users">0</span>
+      </div>
+      <div class="dstat">
+        <span class="dstat-label">Compras totales</span>
+        <span class="dstat-value mono" id="stat-total-purchases">0</span>
+      </div>
+      <div class="dstat dstat-gold">
+        <span class="dstat-label">Total recaudado</span>
+        <span class="dstat-value mono" id="stat-total-revenue">S/ 0.00</span>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h1>Tus grupos</h1>
+      <p>Cada grupo tiene su propio precio de venta, independiente de los demás.</p>
+    </div>
+
+    <div id="groups-grid" class="groups-grid"></div>
+
+    <div id="empty-state" class="empty-state" hidden>
+      <img src="assets/logo.png" alt="" class="empty-logo">
+      <h3>Todavía no creaste ningún grupo</h3>
+      <p>Crea tu primer grupo para empezar a registrar compras, precios y resultados.</p>
+      <button class="btn btn-primary" id="btn-new-group-empty">+ Crear grupo</button>
+    </div>
+
+  </section>
+
+  <!-- ============ GROUP DETAIL VIEW ============ -->
+  <section id="view-group" class="view" hidden>
+
+    <button class="back-btn" id="btn-back">← Volver a grupos</button>
+
+    <div class="group-header">
+      <div class="group-photo-wrap" id="group-photo-edit" title="Cambiar foto del grupo">
+        <img id="group-photo" class="group-photo" src="" alt="">
+        <div class="group-photo-overlay">Cambiar</div>
+        <input type="file" id="group-photo-input" accept="image/*" hidden>
+      </div>
+      <div class="group-header-info">
+        <div class="group-title-row">
+          <h1 id="group-name" contenteditable="true" spellcheck="false"></h1>
+          <button class="icon-btn" id="btn-delete-group" title="Eliminar grupo">🗑</button>
+        </div>
+        <div class="group-meta">
+          <span id="group-partido" class="group-partido"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen del grupo -->
+    <div class="resumen-grid">
+      <div class="rcard rcard-price">
+        <span class="rcard-label">Precio del grupo</span>
+        <span class="rcard-value mono" id="rcard-price">S/ 0.00</span>
+        <button class="link-btn" id="btn-edit-price">Editar precio</button>
+      </div>
+      <div class="rcard">
+        <span class="rcard-label">Usuarios únicos</span>
+        <span class="rcard-value mono" id="rcard-users">0</span>
+      </div>
+      <div class="rcard">
+        <span class="rcard-label">Compras totales</span>
+        <span class="rcard-value mono" id="rcard-purchases">0</span>
+      </div>
+      <div class="rcard rcard-gold">
+        <span class="rcard-label">Total cobrado</span>
+        <span class="rcard-value mono" id="rcard-total">S/ 0.00</span>
+      </div>
+      <div class="rcard">
+        <span class="rcard-label">Promedio por usuario</span>
+        <span class="rcard-value mono" id="rcard-avg">S/ 0.00</span>
+      </div>
+    </div>
+
+    <!-- Editar precio (panel plegable) -->
+    <div class="edit-price-panel" id="edit-price-panel" hidden>
+      <div class="panel-row">
+        <div class="field">
+          <label>Precio actual</label>
+          <div class="mono price-current" id="price-current-display">S/ 0.00</div>
+        </div>
+        <div class="field">
+          <label for="input-new-price">Nuevo precio (S/)</label>
+          <input type="number" id="input-new-price" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="field field-btns">
+          <button class="btn btn-primary" id="btn-save-price">Guardar cambios</button>
+          <button class="btn btn-ghost" id="btn-cancel-price">Cancelar</button>
+        </div>
+      </div>
+      <p class="hint">Esto solo afecta a las compras nuevas. Las compras ya registradas conservan el precio con el que se hicieron.</p>
+    </div>
+
+    <!-- Historial de precios -->
+    <div class="subsection">
+      <div class="subsection-head">
+        <h2>Historial de precios</h2>
+      </div>
+      <ul class="price-history" id="price-history-list"></ul>
+    </div>
+
+    <!-- Compras -->
+    <div class="subsection">
+      <div class="subsection-head">
+        <h2>Compras registradas</h2>
+        <div class="subsection-actions">
+          <button class="btn btn-ghost" id="btn-bulk-add">+ Agregar varios</button>
+          <button class="btn btn-primary" id="btn-add-purchase">+ Agregar compra</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="purchases-table">
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Precio pagado</th>
+              <th>Fecha</th>
+              <th class="th-actions">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="purchases-tbody"></tbody>
+        </table>
+        <div id="purchases-empty" class="table-empty" hidden>Todavía no hay compras registradas en este grupo.</div>
+      </div>
+    </div>
+
+    <!-- Resumen detallado / JIJAZO FLASH -->
+    <div class="subsection">
+      <div class="subsection-head">
+        <h2>Resumen detallado</h2>
+        <div class="subsection-actions">
+          <button class="btn btn-ghost" id="btn-send-whatsapp">📲 Enviar resumen</button>
+          <button class="btn btn-ghost" id="btn-download-flash">⬇ Descargar imagen</button>
+        </div>
+      </div>
+
+      <div class="flash-wrap">
+        <div class="flash-card" id="flash-card">
+          <div class="flash-title" id="flash-title">JIJAZO FLASH</div>
+
+          <div class="flash-row">
+            <span class="flash-label">Personas que entraron:</span>
+            <span class="flash-value mono" id="flash-personas">0</span>
+            <button class="mini-edit" id="btn-edit-personas" title="Ajustar manualmente">✎</button>
+          </div>
+
+          <div class="flash-row">
+            <span class="flash-label">Resultado:</span>
+            <select class="flash-select" id="flash-resultado">
+              <option value="pendiente">Pendiente ⏳</option>
+              <option value="ganado">Ganado ✅</option>
+              <option value="perdido">Perdido ❌</option>
+            </select>
+          </div>
+
+          <div class="flash-row">
+            <span class="flash-label">Cuota:</span>
+            <input class="flash-input mono" id="flash-cuota" placeholder="1.55">
+          </div>
+
+          <div class="flash-row">
+            <span class="flash-label">Fecha:</span>
+            <input class="flash-input mono" id="flash-fecha" placeholder="DD/MM/AA">
+          </div>
+
+          <div class="flash-row flash-row-link">
+            <span class="flash-label">Link:</span>
+            <input class="flash-input flash-link-input" id="flash-link" placeholder="https://t.me/...">
+          </div>
+
+          <div class="flash-shot" id="flash-shot-wrap">
+            <img id="flash-shot-img" class="flash-shot-img" src="" alt="" hidden>
+            <div class="flash-shot-placeholder" id="flash-shot-placeholder">
+              <span>+ Subir captura de la apuesta</span>
+            </div>
+            <input type="file" id="flash-shot-input" accept="image/*" hidden>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+</div>
+
+<!-- ============ MODAL: NUEVO GRUPO ============ -->
+<div class="modal-overlay" id="modal-new-group" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Nuevo grupo</h2>
+      <button class="icon-btn" id="btn-close-new-group">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Foto del grupo</label>
+        <div class="photo-picker" id="new-photo-picker">
+          <img id="new-photo-preview" class="photo-preview" src="" hidden alt="">
+          <span id="new-photo-placeholder" class="photo-placeholder">+</span>
+          <input type="file" id="new-photo-input" accept="image/*" hidden>
+        </div>
+      </div>
+      <div class="field">
+        <label for="new-group-name">Nombre del grupo</label>
+        <input type="text" id="new-group-name" placeholder="Ej: JIJAZO NBA — 21 AGOSTO">
+      </div>
+      <div class="field">
+        <label for="new-group-partido">Partido / descripción (opcional)</label>
+        <input type="text" id="new-group-partido" placeholder="Ej: Flamengo RJ vs Cruzeiro">
+      </div>
+      <div class="field">
+        <label for="new-group-price">Precio del grupo (S/)</label>
+        <input type="number" id="new-group-price" min="0" step="0.01" placeholder="30.00">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="btn-cancel-new-group">Cancelar</button>
+      <button class="btn btn-primary" id="btn-create-group">Crear grupo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: AGREGAR COMPRA ============ -->
+<div class="modal-overlay" id="modal-add-purchase" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Agregar compra</h2>
+      <button class="icon-btn" id="btn-close-add-purchase">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label for="purchase-name">Nombre del usuario</label>
+        <input type="text" id="purchase-name" placeholder="Ej: Draken">
+      </div>
+      <div class="field">
+        <label for="purchase-price">Precio de esta compra (S/)</label>
+        <input type="number" id="purchase-price" min="0" step="0.01">
+      </div>
+      <div class="field">
+        <label for="purchase-date">Fecha</label>
+        <input type="date" id="purchase-date">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="btn-cancel-add-purchase">Cancelar</button>
+      <button class="btn btn-primary" id="btn-confirm-add-purchase">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: AGREGAR VARIOS (BULK) ============ -->
+<div class="modal-overlay" id="modal-bulk-add" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Agregar varios usuarios</h2>
+      <button class="icon-btn" id="btn-close-bulk-add">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label for="bulk-names">Un nombre por línea</label>
+        <textarea id="bulk-names" rows="8" placeholder="Draken&#10;Juan&#10;Pedro"></textarea>
+      </div>
+      <p class="hint">Cada usuario se registrará con el precio actual del grupo.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="btn-cancel-bulk-add">Cancelar</button>
+      <button class="btn btn-primary" id="btn-confirm-bulk-add">Agregar todos</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: EDITAR COMPRA ============ -->
+<div class="modal-overlay" id="modal-edit-purchase" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Editar compra</h2>
+      <button class="icon-btn" id="btn-close-edit-purchase">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label for="edit-purchase-name">Nombre del usuario</label>
+        <input type="text" id="edit-purchase-name">
+      </div>
+      <div class="field">
+        <label for="edit-purchase-price">Precio de esta compra (S/)</label>
+        <input type="number" id="edit-purchase-price" min="0" step="0.01">
+      </div>
+      <div class="field">
+        <label for="edit-purchase-date">Fecha</label>
+        <input type="date" id="edit-purchase-date">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger" id="btn-delete-purchase">Eliminar compra</button>
+      <button class="btn btn-primary" id="btn-save-purchase">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
